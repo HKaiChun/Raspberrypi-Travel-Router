@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Router</title>
+
+    <style type="text/css">
+        html {
+            color-scheme: dark light;
+        }
+    </style>
+
+    <script type="module" defer>
+        /** @type {HTMLButtonElement} */
+        const sendBtn = document.querySelector("#login-btn");
+
+        /** @type {HTMLInputElement} */
+        const nameInput = document.querySelector("#username")
+
+        /** @type {HTMLInputElement} */
+        const pwInput = document.querySelector("#password")
+
+        sendBtn.addEventListener("click", async (e) => {
+            e.preventDefault()
+
+            sendBtn.disabled = true;
+
+            const resp = await fetch("http://192.168.5.1:9999/login", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: nameInput.value,
+                    password: pwInput.value
+                })
+            })
+
+            console.log(resp)
+
+            if (resp.status !== 202) {
+                alert("login fail");
+
+                nameInput.value = ""
+                pwInput.value = ""
+                sendBtn.disabled = false
+                return
+            }
+
+            window.location.reload()
+        })
+
+    </script>
+</head>
+
+<body>
+    <h1>Raspberry Pi Travel Router</h1>
+
+    <h2>Login Page</h2>
+    <form>
+        <label for="username">Name: </label>
+        <input type="text" id="username" required>
+        <label for="password">Password: </label>
+        <input type="password" id="password" required>
+        <button type="button" id="login-btn">Send</button>
+    </form>
+</body>
+
+</html>
