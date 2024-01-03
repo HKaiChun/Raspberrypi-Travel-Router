@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Router</title>
+
+    <style type="text/css">
+        html {
+            color-scheme: dark light;
+        }
+
+        .tg {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .tg td {
+            border-color: grey;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+
+        .tg th {
+            border-color: grey;
+            border-style: solid;
+            border-width: 1px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            overflow: hidden;
+            padding: 10px 5px;
+            word-break: normal;
+        }
+
+        .tg .tg-0pky {
+            border-color: inherit;
+            text-align: left;
+            vertical-align: top
+        }
+
+        .tg .tg-0lax {
+            text-align: left;
+            vertical-align: top
+        }
+    </style>
+
+    <script type="module" defer>
+        /** @type {HTMLButtonElement} */
+        const logoutBtn = document.querySelector("#logout-btn");
+
+        logoutBtn.addEventListener("click", async () => {
+            logoutBtn.disabled = true
+            const resp = await fetch(`${window.location.origin}/logout`)
+
+            if (resp.status != 202) {
+                throw new Error("logout fail")
+                logoutBtn.disabled = false
+            }
+
+            window.location.reload()
+        })
+    </script>
+
+    <script type="module" defer>
+        /** @type {HTMLElement} */
+        const networkStatusSection = document.querySelector("#network-status")
+
+        async function updateNetworkStatus() {
+            const resp = await fetch(`${window.location.origin}/current_status`)
+
+            /**
+             * @typedef network_status
+             * @type {object}
+             * @property {string?} ssid
+             * @property {string?} ip_address
+            */
+
+            /** @type {network_status} */
+            const result = await resp.json()
+
+            if (result.ssid === null || result.ip_address === null) {
+                networkStatusSection.innerHTML = `
+                    <p>Router does not connect to any WiFi.</p>
+                `
+                return
+            }
+
+            networkStatusSection.innerHTML = `
+            <table class="tg">
+                <thead>
+                    <tr>
+                        <th class="tg-0pky">ssid</th>
+                        <th class="tg-0pky">ip address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="tg-0lax">${result.ssid}</td>
+                        <td class="tg-0lax">${result.ip_address}</td>
+                    </tr>
+                </tbody>
+            </table>
+            `
+        }
+
+        addEventListener("DOMContentLoaded", async () => {
+            updateNetworkStatus()
+        })
+    </script>
+
+    <script type="module" defer>
+        /** @type {HTMLElement} */
+        const scanResultList = document.querySelector("#scan-network")
+
+        /** @type {HTMLButtonElement} */
+        const scanNetworkBtn = document.querySelector("#scan-network-btn")
+
+        /** @type {HTMLButtonElement} */
+        const scanNetworkCleanBtn = document.querySelector("#scan-network-clear-btn")
+
+        async function getScanNetwork() {
+            const resp = await fetch(`${window.location.origin}/scan_network`)
+
+            /**
+             * @typedef scan_result
+             * @type {object}
+             * @property {string} cellnumber
+             * @property {string} essid
+             * @property {string} protocol
+             * @property {string} mode
+             * @property {string} frequency
+             * @property {string} frequency_units
+             * @property {string} channel
+             * @property {string} signal_quality
+             * @property {string} signal_level_dBm
+            */
+
+            /** @type {scan_result[]} */
+            const result = await resp.json()
+
+            scanResultList.innerHTML = `
+            <table class="tg">
+                <thead>
+                <tr>
+                    <th class="tg-0pky">cellnumber</th>
+                    <th class="tg-0pky">ssid</th>
+                    <th class="tg-0lax">mac address</th>
+                    <th class="tg-0lax">protocal</th>
+                    <th class="tg-0lax">mode</th>
+                    <th class="tg-0lax">frequency</th>
+                    <th class="tg-0lax">channel</th>
+                    <th class="tg-0lax">encryption</th>
+                    <th class="tg-0lax">signal quality</th>
+                </tr>
+                </thead>
+                <tbody>
+                ${result.map(v => {
+                return `
+                        <tr>
+                            <td class="tg-0lax">${v.cellnumber}</td>
+                            <td class="tg-0lax">${v.essid}</td>
+                            <td class="tg-0lax">${v.mac}</td>
+                            <td class="tg-0lax">${v.protocol}</td>
+                            <td class="tg-0lax">${v.mode}</td>
+                            <td class="tg-0lax">${`${v.frequency} ${v.frequency_units}`}</td>
+                            <td class="tg-0lax">${v.channel}</td>
+                            <td class="tg-0lax">${v.encryption}</td>
+                            <td class="tg-0lax">${v.signal_quality}</td>
+                        </tr>
+                    `})}
+                </tbody>
+            `
+
+        }
+
+        scanNetworkBtn.addEventListener("click", () => {
+            getScanNetwork()
+        })
+
+        scanNetworkCleanBtn.addEventListener("click", () => {
+            scanResultList.innerHTML = ""
+        })
+    </script>
+
+    <script type="module" defer>
+        /** @type {HTMLTextAreaElement} */
+        const configNetworkTextArea = document.querySelector("#config-network")
+
+        /** @type {HTMLInputElement} */
+        const selectNetworkIdInput = document.querySelector("#select-network")
+
+        /** @type {HTMLButtonElement} */
+        const selectNetworkBtn = document.querySelector("#select-network-btn")
+
+        /** @type {HTMLButtonElement} */
+        const configNetworkResetBtn = document.querySelector("#config-network-reset-btn")
+
+        async function applyWpaConfig() {
+            const resp = await fetch(`${window.location.origin}/apply_wpa_config`)
+
+            if (resp.status !== 200) {
+                throw new Error("/save_wpa_config fail")
+            }
+        }
+
+        async function saveWpaConfig() {
+            let resp = await fetch(`${window.location.origin}/save_wpa_config`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: configNetworkTextArea.value
+                })
+
+            if (resp.status !== 200) {
+                throw new Error("/save_wpa_config fail")
+            }
+        }
+
+        async function getSelectNetworkId() {
+            const resp = await fetch(`${window.location.origin}/get_select_network`)
+
+            /**
+             * @typedef select_netid_response
+             * @type {object}
+             * @property {number} net_id
+            */
+
+            /** @type {select_netid_response} */
+            const result = await resp.json()
+
+            selectNetworkIdInput.value = result.net_id
+        }
+        async function selectNetworkId() {
+            const resp = await fetch(`${window.location.origin}/select_network`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        net_id: selectNetworkIdInput.value
+                    })
+                })
+
+            if (resp.status !== 200) {
+                throw new Error("/select_network fail")
+            }
+        }
+
+        async function loadWpaConfig() {
+            const resp = await fetch(`${window.location.origin}/get_wpa_config`)
+            configNetworkTextArea.value = await resp.text()
+        }
+
+        selectNetworkBtn.addEventListener("click", async () => {
+            selectNetworkBtn.disabled = true
+            await saveWpaConfig()
+            await applyWpaConfig()
+            await selectNetworkId()
+            selectNetworkBtn.disabled = false
+        })
+
+        configNetworkResetBtn.addEventListener("click", async () => {
+            configNetworkResetBtn.disabled = true
+            await loadWpaConfig()
+            configNetworkResetBtn.disabled = false
+        })
+
+        addEventListener("DOMContentLoaded", async () => {
+            await getSelectNetworkId()
+            await loadWpaConfig()
+        })
+
+    </script>
+</head>
+
+<body>
+    <h1>Raspberry Pi Travel Router</h1>
+
+    <button type="button" id="logout-btn">logout</button>
+
+    <section>
+        <h2>Network Status</h2>
+        <div id="network-status"></div>
+    </section>
+
+    <section>
+        <h2>Available Network</h2>
+        <button type="button" id="scan-network-btn">update wifi status</button>
+        <button type="button" id="scan-network-clear-btn">clear</button>
+        <div id="scan-network"></div>
+    </section>
+
+
+    <section>
+        <h2>Config Network</h2>
+
+        <div>
+            <label for="select-network">Network id</label>
+            <input type="number" id="select-network" value="0" required>
+            <button type="button" id="select-network-btn">Select Network</button>
+        </div>
+
+        <h3>wpa-cli network</h3>
+        <div>
+
+            <button type="button" id="config-network-reset-btn">reset</button>
+            <br>
+            <textarea id="config-network" cols="60" rows="30" required></textarea>
+        </div>
+
+    </section>
+</body>
+
+</html>

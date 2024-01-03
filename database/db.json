@@ -1,0 +1,10 @@
+[
+    {
+        "ssid": "testinglocalan",
+        "psk": "foobarbaz"
+    },
+    {
+        "ssid": "testingwhatlan",
+        "psk": "foobarbazabc"
+    }
+]
