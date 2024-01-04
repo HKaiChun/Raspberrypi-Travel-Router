@@ -288,6 +288,6 @@ as long as you don't mess up the configuration.
     - 110213044 陳俊傑
 
 ## References
-
+- [[Raspberry]Raspberry Pi 3 model B 變身為WiFi AP (Bridge mode)](https://tkunlin.medium.com/raspberry-raspberry-pi-3-model-b-%E8%AE%8A%E8%BA%AB%E7%82%BAwifi-ap-bridge-mode-8790884fe17)
 - [YouTube - Raspberry Pi Travel Router - RaspAP - Everyday Tech](https://www.youtube.com/watch?v=m2JvWFr8bX4)
 - [YouTube - Update Python on Raspberry Pi / Change Python Version | Simple Guide | Complete - TroubleChute](https://www.youtube.com/watch?v=Cj7NhuLkvdQ)
