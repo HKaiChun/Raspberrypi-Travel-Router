@@ -16,6 +16,7 @@ It kind of success?
 - 16 GB SD card
 
 ### Software
+- Raspberry Pi OS Lite(64-bit)
 - Python 3.12.1
 
 ## Implementation Process
