@@ -255,6 +255,16 @@ The following section will guild you how to start the control website when the R
   @reboot sudo /home/pi/router_app/launch.sh
   ```
 
+- add routeing rule into iptables
+
+    `sudo iptables -t nat -A POSTROUTING -o wlan1 -j MASQUERADE
+
+    - you can preserve the rule by using "iptables-persistent"
+        ```
+        sudo apt install iptables-persistent
+        iptables-persistent save
+        ```
+
 - when you restart, access `http://192.168.5.1:9999` should be able visit the tab.
 
 ## Usage
