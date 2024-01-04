@@ -266,6 +266,13 @@ The following section will guild you how to start the control website when the R
         ```
 
 - when you restart, access `http://192.168.5.1:9999` should be able visit the tab.
+## Knowledge from Lecture
+
+- DHCP
+- SSH
+- Iptables
+- Kernel module
+- crontab
 
 ## Usage
 
