@@ -1,6 +1,4 @@
 # Raspberrypi-Travel-Router
-- The RaspberryPi Travel Router becomes the perfect companion for travelers, especially those who carry multiple devices. When traveling abroad, we often bring along smartphones, tablets, laptops, and various other devices, all of which require a stable and secure internet connection. Due to varying network environments in different regions, relying solely on Wi-Fi provided by hotels or public places may not always meet our needs.
-  With the RaspberryPi Travel Router, you can effortlessly establish your own mobile network wherever you go, ensuring that all your devices have access to a reliable internet connection.
 
 <big>***STUDY PROJECT***</big>
 
@@ -10,7 +8,8 @@ A small project try to build a router with Raspberry Pi, without RaspAP.
 
 It kind of success?
 ## Motivation
-- 
+-  The RaspberryPi Travel Router becomes the perfect companion for travelers, especially those who carry multiple devices. When traveling abroad, we often bring along smartphones, tablets, laptops, and various other devices, all of which require a stable and secure internet connection. Due to varying network environments in different regions, relying solely on Wi-Fi provided by hotels or public places may not always meet our needs.
+  With the RaspberryPi Travel Router, you can effortlessly establish your own mobile network wherever you go, ensuring that all your devices have access to a reliable internet connection.
 
 ## Implementation Resources
 
