@@ -291,11 +291,11 @@ as long as you don't mess up the configuration.
     - 110213012 陳維德
 
 - Implementation (Control UI)
-    - 110213041 [Repo](https://github.com/110213041)
+    - 110213041 陳家輝
     - 110213077 陳慧珍
 
 - Concept
-    - 110213041
+    - 110213041 陳家輝
     - 110213044 陳俊傑
 
 ## References
