@@ -261,7 +261,7 @@ The following section will guild you how to start the control website when the R
 
 - add routeing rule into iptables
 
-    `sudo iptables -t nat -A POSTROUTING -o wlan1 -j MASQUERADE
+    `sudo iptables -t nat -A POSTROUTING -o wlan1 -j MASQUERADE`
 
     - you can preserve the rule by using "iptables-persistent"
         ```
@@ -280,9 +280,146 @@ The following section will guild you how to start the control website when the R
 
 ## Usage
 
-It can connect to other wifi.
+The control panel will be hosted at `http://192.165.5.1:9999`. 
+And it require to enter account and password to login.
+The default account and password will be hard code as `adminpi` and `raspberry`.
 
-as long as you don't mess up the configuration.
+<big>*** ONCE AGAIN! THIS PROJECT IS NOT AIM FOR PRODUCTION! ***</big>
+
+The Application UI have basic authentication base on LAN IP.
+In theory you will able to access the control panel once you login into any browser on your device.
+
+After login, you will expect to see following layout.
+
+```
++-----------------------------+-------------------------+
+|       Network Status                                  |
++-----------------------------+-------------------------+
+| Available Network                                     |
+| update wifi status (button) | clean (button)          |
++-----------------------------+-------------------------+
+| Config Network                                        |
+| Network id (input)          | Select Network (button) |
+|                                                       |
+| reset (button)                                        |
+| wpa-cli network                                       |
+| (text area)                                           |
++-----------------------------+-------------------------+
+```
+
+- Network Status
+
+    This section will display the current connection status.
+
+    If router current does not connect to any wifi, the following text will be display:
+
+    ```
+    Router does not connect to any WiFi.
+    ```
+    Otherwise, it will display the current connected wifi SSID and ip address:
+    
+    ```
+    +---------+-------------+
+    |  ssid   | ip address  |
+    +---------+-------------+
+    | example | 192.168.0.1 |
+    +---------+-------------+
+    ```
+
+    You can get the latest state by refreshing the control panel webpage.
+
+- Available Network
+
+    This section will display the nearby wifi info.
+    Assumed your USB wifi adapter work as intended, you can get the nearby wifi by clicking `update wifi status` button. Which will generate following result.
+
+    ```
+    +------------+-------------+-------------------+----------+--------+-----------+---------+------------+----------------+
+    | cellnumber |    ssid     |    mac address    | protocal |  mode  | frequency | channel | encryption | signal quality |
+    +------------+-------------+-------------------+----------+--------+-----------+---------+------------+----------------+
+    |         01 | exampleWifi | 11:22:33:44:55:66 | WPA2     | Master | 2.462 GHz |      11 | on         |             80 |
+    +------------+-------------+-------------------+----------+--------+-----------+---------+------------+----------------+
+    ```
+
+    update the table by clicking the `update wifi status` button again.
+
+    if you want to clean the session table, click `clean` button.
+
+- Config Network
+    
+    - Overview
+
+      The router will connect the network according value of the `Network id` value.
+
+      `Network id` will be the the `index` of the setting json.
+
+      All the network configuration will be written into `wpa_supplicant-wlan1.conf` (USB wifi adapter config file).
+
+      The `Network id` option will try to access the network.
+      If the connection fail then will fallback to any network available in network config.
+
+      ```
+             +---------+
+             |select id|
+             +----+----+
+                  |
+                  v
+        +---------------------+
+        |apply network setting|
+        +---------+-----------+
+                  |
+                  v
+      +-------------------------+
+      | select hotspot by index |
+      +-----------+-------------+
+                  |
+                  v
+         +-----------------+
+         | connect network |
+         +-----------------+
+       ```
+    - Network ID
+        
+        The value will be the index position of the `wpa-cli network` config json array.
+        Submit `Network ID` by clicking `Select network` button.
+        Which will select the correspond network in your `wpa-cli network` config json array.
+
+    - wpa-cli network
+
+        This is where you configure the wifi of your device.
+
+        <big>CURRENTLY ONLY SUPPORT PSK WIFI</big>
+
+        Each json object shall follow this schema:
+        
+        ```json
+        {
+            "ssid": "ssid",
+            "psk": "password"
+        }
+        ```
+
+        And must wrap by an array:
+
+        ```json
+        [
+            {
+                "ssid": "wifi01",
+                "psk": "foo"
+            },
+            {
+                "ssid": "exampleWifiABC",
+                "psk": "aabbccddeeffgg"
+            }
+        ]
+        ```
+        Perviously motioned `Network ID` will control which wifi shall be connected if available.
+        For example: to connect "wifi01", Network ID shall be 0, to connect "exampleWifiABC", Network ID shall be 1.
+
+        To update the network setting, click the `Select Network` button.
+
+        If you want to rollback the current setting, click `reset` button.
+        This will rollback the last time when `Select Network` clicked.
 
 ## Job Assignment
 
